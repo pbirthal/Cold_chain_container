@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Industrial Setup Dashboard</title>
+<style>
+  body {
+    background-color: #D3D3D3;
+    color: white;
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
+  }
+
+  .dashboard {
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    gap: 50px;
+    position: relative;
+    margin-bottom: 40px;
+    
+  margin-top: 120px; /* space from top so fans are fully visible */
+  }
+
+  /* Container center */
+  .container-wrapper {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .container img {
+    width: 300px; /* larger container */
+  }
+
+  /* Fans on top */
+  .fans {
+    position: absolute;
+    top: -70px;
+    display: flex;
+    gap: 20px;
+    z-index: 2;
+  }
+
+  .fans img {
+    width: 60px;
+    height: 60px;
+  }
+
+  .left-panel {
+  display: flex;          /* horizontal layout */
+  flex-direction: row;    /* side by side */
+  align-items: center;    /* vertical alignment of both */
+  gap: 20px;              /* spacing between Water Tank and Pump */
+  margin-top: 50px;       /* top margin from page */
+  margin-right: 100px;
+}
+
+
+  .left-panel .pump img {
+    width: 60px;
+    height: auto;
+  }
+
+  .left-panel .water-tank canvas {
+    width: 60px;
+    height: 90px;
+  }
+.left-panel .water-tank {
+  margin-left: 0px; /* remove extra horizontal space */
+  margin-right: 100px;
+}
+  .component {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+    color: blue;
+    position: relative;
+  }
+
+  /* Compressors right */
+  .compressors-right {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+    position: absolute;
+    top: 0;
+    right: -180px;
+  }
+
+  .compressor img {
+    width: 70px;
+  }
+
+  .status-light {
+    position: absolute;
+    top: -16px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background-color: gray;
+    border: 2px solid white;
+    z-index: 2;
+    pointer-events: none;
+  }
+
+  @keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+
+  .fan-rotating {
+    animation: spin 1s linear infinite;
+  }
+
+  .component img:hover { transform: scale(1.1); }
+
+  .current-temp {
+    width: 220px;
+    background-color: #222;
+    color: white;
+    text-align: center;
+    padding: 10px;
+    border-radius: 10px;
+    font-size: 18px;
+  }
+</style>
+</head>
+<body>
+
+<div class="dashboard">
+
+  <div class="left-panel">
+  <div class="component water-tank">
+    <canvas id="tank-canvas" width="60" height="90"></canvas>
+    <div>Water Tank</div>
+  </div>
+
+  <div class="component pump">
+    <img id="pump-img" src="pump_icon.png" alt="Pump">
+    <div>Pump</div>
+  </div>
+</div>
+
+
+  <!-- Container center -->
+  <div class="container-wrapper">
+    <div class="container">
+      <img id="container-img" src="container.png" alt="Container">
+      <div class="fans">
+        <img id="fan1-img" src="fan.png" alt="Fan 1">
+        <img id="fan2-img" src="fan.png" alt="Fan 2">
+      </div>
+
+      <!-- Compressors right -->
+      <div class="compressors-right">
+        <div class="compressor">
+          <div class="status-light" id="comp1-light"></div>
+          <img id="comp1-img" src="compressor_new.png" alt="Compressor 1">
+          <div>Compressor 1</div>
+        </div>
+        <div class="compressor">
+          <div class="status-light" id="comp2-light"></div>
+          <img id="comp2-img" src="compressor_new.png" alt="Compressor 2">
+          <div>Compressor 2</div>
+        </div>
+      </div>
+
+    </div>
+    <div>Container</div>
+  </div>
+
+</div>
+
+
+<script>
+  const comp1Light = document.getElementById('comp1-light');
+  const comp2Light = document.getElementById('comp2-light');
+  const comp1Img = document.getElementById('comp1-img');
+  const comp2Img = document.getElementById('comp2-img');
+  const fan1 = document.getElementById('fan1-img');
+  const fan2 = document.getElementById('fan2-img');
+  const container = document.getElementById('container-img');
+  const pump = document.getElementById('pump-img');
+
+  let status = { compressor1: true, compressor2: true };
+
+  function updateDashboard() {
+    fan1.classList.toggle('fan-rotating', status.compressor1);
+    fan2.classList.toggle('fan-rotating', status.compressor2);
+
+    container.src = (status.compressor1 || status.compressor2) ? 'worldwide-shipping.png' : 'container.png';
+    container.style.filter = (status.compressor1 || status.compressor2)
+      ? 'invert(45%) sepia(70%) saturate(500%) hue-rotate(200deg) brightness(95%) contrast(90%)'
+      : 'invert(18%) sepia(97%) saturate(5970%) hue-rotate(358deg) brightness(95%) contrast(102%)';
+
+    comp1Light.style.backgroundColor = status.compressor1 ? 'green' : 'red';
+    comp2Light.style.backgroundColor = status.compressor2 ? 'green' : 'red';
+
+    const activeFilter = 'invert(52%) sepia(80%) saturate(450%) hue-rotate(75deg) brightness(95%) contrast(90%)';
+    const inactiveFilter = 'invert(18%) sepia(97%) saturate(5970%) hue-rotate(358deg) brightness(95%) contrast(102%)';
+    comp1Img.style.filter = status.compressor1 ? activeFilter : inactiveFilter;
+    comp2Img.style.filter = status.compressor2 ? activeFilter : inactiveFilter;
+    fan1.style.filter = status.compressor1 ? activeFilter : inactiveFilter;
+    fan2.style.filter = status.compressor2 ? activeFilter : inactiveFilter;
+    pump.style.filter = activeFilter;
+  }
+
+  setInterval(() => {
+    status.compressor1 = !status.compressor1;
+    status.compressor2 = !status.compressor2;
+    updateDashboard();
+  }, 2000);
+
+  updateDashboard();
+</script>
+
+<script>
+const canvas = document.getElementById('tank-canvas');
+const ctx = canvas.getContext('2d');
+const tankImg = new Image();
+tankImg.src = 'water-tank.png';
+let fillStage = 0;
+
+tankImg.onload = () => {
+  drawTank();
+  setInterval(() => {
+    fillStage = (fillStage + 1) % 4;
+    drawTank();
+  }, 5000);
+};
+
+function drawTank() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  ctx.drawImage(tankImg, 0, 0, canvas.width, canvas.height);
+  const fillHeights = [0, 0.33, 0.66, 1];
+  const fillHeight = canvas.height * fillHeights[fillStage];
+  ctx.fillStyle = '#007BFF';
+  ctx.globalCompositeOperation = 'source-atop';
+  ctx.fillRect(0, canvas.height - fillHeight, canvas.width, fillHeight);
+  ctx.globalCompositeOperation = 'source-over';
+}
+</script>
+
+</body>
+</html>
