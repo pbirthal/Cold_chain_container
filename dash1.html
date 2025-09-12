@@ -350,19 +350,6 @@
     width: 70px;
   }
 
-  .status-light {
-    position: absolute;
-    top: -16px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 14px;
-    height: 14px;
-    border-radius: 50%;
-    background-color: gray;
-    border: 2px solid white;
-    z-index: 2;
-    pointer-events: none;
-  }
 
   @keyframes spin {
     from { transform: rotate(0deg); }
@@ -375,11 +362,74 @@
 
   .component img:hover { transform: scale(1.1); }
 
+.signal-lights-panel {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  margin-bottom: 20px;
+  justify-content: center;
+  align-items: center;
+}
+.signal-light {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.9em;
+  color: #e0e0e0;
+}
+.signal-light .status-light {
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  background-color: #6c757d; /* default gray/off */
+  border: 1px solid #333;
+}
+.status-light.running { background-color: #28a745; } /* green */
+.status-light.red { background-color: #dc3545; } /* red alert */
     </style>
 </head>
 <body>
 
     <div class="dashboard-header">COLD STORAGE SYSTEM OVERVIEW</div>
+        <!-- Signal Lights Panel -->
+<div class="signal-lights-panel">
+  <div class="signal-light">
+    <div class="status-light running" id="signal-running"></div>
+    <span>Running</span>
+  </div>
+  <div class="signal-light">
+    <div class="status-light" id="signal-comp-overload"></div>
+    <span>Compressor Overload</span>
+  </div>
+  <div class="signal-light">
+    <div class="status-light" id="signal-pump-overload"></div>
+    <span>Pump Overload</span>
+  </div>
+  <div class="signal-light">
+    <div class="status-light" id="signal-lp-trip"></div>
+    <span>LP Trip</span>
+  </div>
+  <div class="signal-light">
+    <div class="status-light" id="signal-hp-trip"></div>
+    <span>HP Trip</span>
+  </div>
+  <div class="signal-light">
+    <div class="status-light" id="signal-defrost"></div>
+    <span>Defrost</span>
+  </div>
+  <div class="signal-light">
+    <div class="status-light" id="signal-heating"></div>
+    <span>Heating</span>
+  </div>
+  <div class="signal-light">
+    <div class="status-light" id="signal-door-open"></div>
+    <span>Door Open</span>
+  </div>
+  <div class="signal-light">
+    <div class="status-light" id="signal-under-maintenance"></div>
+    <span>Under Maintenance</span>
+  </div>
+</div>
 
     <div class="dashboard-grid">
 
@@ -551,6 +601,47 @@ function drawTank() {
   ctx.globalCompositeOperation = 'source-over';
 }
 </script>
+<script>
+window.onload = function() {
+  let signals = {
+    running: true,
+    compOverload: false,
+    pumpOverload: false,
+    lpTrip: false,
+    hpTrip: false,
+    defrost: false,
+    heating: false,
+    doorOpen: false,
+    underMaintenance: false
+  };
 
+  function updateSignals() {
+    document.getElementById('signal-running').className = 'status-light ' + (signals.running ? 'running' : '');
+    document.getElementById('signal-comp-overload').className = 'status-light ' + (signals.compOverload ? 'red' : '');
+    document.getElementById('signal-pump-overload').className = 'status-light ' + (signals.pumpOverload ? 'red' : '');
+    document.getElementById('signal-lp-trip').className = 'status-light ' + (signals.lpTrip ? 'red' : '');
+    document.getElementById('signal-hp-trip').className = 'status-light ' + (signals.hpTrip ? 'red' : '');
+    document.getElementById('signal-defrost').className = 'status-light ' + (signals.defrost ? 'red' : '');
+    document.getElementById('signal-heating').className = 'status-light ' + (signals.heating ? 'red' : '');
+    document.getElementById('signal-door-open').className = 'status-light ' + (signals.doorOpen ? 'red' : '');
+    document.getElementById('signal-under-maintenance').className = 'status-light ' + (signals.underMaintenance ? 'red' : '');
+  }
+
+  setInterval(() => {
+    signals.running = !signals.running;
+    signals.compOverload = Math.random() > 0.7;
+    signals.pumpOverload = Math.random() > 0.7;
+    signals.lpTrip = Math.random() > 0.8;
+    signals.hpTrip = Math.random() > 0.8;
+    signals.defrost = Math.random() > 0.85;
+    signals.heating = Math.random() > 0.8;
+    signals.doorOpen = Math.random() > 0.9;
+    signals.underMaintenance = Math.random() > 0.95;
+    updateSignals();
+  }, 5000);
+
+  updateSignals();
+};
+</script>
 </body>
 </html>
