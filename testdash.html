@@ -1,0 +1,727 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cold Storage System Dashboard</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #2c2c2c;
+            color: #e0e0e0;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            box-sizing: border-box;
+        }
+
+        .dashboard-header {
+            font-size: 2.2em;
+            font-weight: 600;
+            color: #fff;
+            border-bottom: 2px solid #444;
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 1.5fr 1fr; /* Adjust column width as needed */
+            grid-template-rows: auto auto auto;
+            gap: 20px;
+            width: 100%;
+            max-width: 1400px; /* Max width for the dashboard */
+            margin: 0 auto;
+        }
+
+        .card {
+            background-color: #1a1a1a;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .card-title {
+            font-size: 1.3em;
+            font-weight: 500;
+            color: #fff;
+            margin-bottom: 10px;
+            border-bottom: 1px solid #333;
+            padding-bottom: 8px;
+        }
+        .system-overview-card {
+    position: relative; /* Add this line */
+    grid-column: 1 / 3;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    padding: 30px;
+    flex-wrap: wrap;
+    background-color: gray;
+}
+
+        .system-overview-card .component {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+            margin: 10px 20px;
+        }
+        .system-overview-card .component img {
+            width: 80px;
+            height: 80px;
+            filter: drop-shadow(0 0 5px rgba(0,0,0,0.5));
+        }
+        .system-overview-card .component.tank img {
+            width: 100px;
+            height: 100px;
+        }
+        .system-overview-card .component.container-box {
+            position: relative;
+        }
+        .system-overview-card .component.container-box img {
+            width: 150px;
+            height: 100px;
+        }
+
+        .system-overview-card .status-indicator {
+            width: 15px;
+            height: 15px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-left: 5px;
+            border: 1px solid #333;
+        }
+        .status-on { background-color: #28a745; } /* Green */
+        .status-off { background-color: #6c757d; } /* Gray */
+        .status-tripped { background-color: #dc3545; } /* Red */
+        .status-warning { background-color: #ffc107; } /* Orange */
+
+        .temperature-card, .humidity-card {
+            text-align: center;
+        }
+        .current-value {
+            font-size: 3em;
+            font-weight: bold;
+            color: #e0e0e0;
+        }
+        .status-text {
+            font-size: 0.9em;
+            color: #a0a0a0;
+        }
+        .set-temp-control {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        .set-temp-control input {
+            width: 80px;
+            padding: 8px;
+            border-radius: 5px;
+            border: 1px solid #444;
+            background-color: #333;
+            color: #e0e0e0;
+            font-size: 1.1em;
+        }
+        .set-temp-control button {
+            padding: 8px 15px;
+            border-radius: 5px;
+            border: none;
+            background-color: #007bff;
+            color: white;
+            cursor: pointer;
+            font-size: 1.1em;
+            transition: background-color 0.2s;
+        }
+        .set-temp-control button:hover {
+            background-color: #0056b3;
+        }
+
+        .alarm-card {
+            background-color: #dc3545; /* Red for critical alarms */
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+        }
+        .alarm-card .alarm-item {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 10px;
+            gap: 10px;
+        }
+        .alarm-card .alarm-item::before {
+            content: '🚨'; /* Alarm icon */
+            font-size: 1.5em;
+        }
+        .alarm-card .warning-item {
+            background-color: #ffc107; /* Orange for warnings */
+            color: #333;
+            padding: 10px;
+            border-radius: 5px;
+            margin-top: 10px;
+        }
+        .alarm-card button {
+            background-color: #c82333;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 15px;
+        }
+
+        .door-monitor-card {
+            text-align: center;
+            background-color: #1a1a1a;
+            color: #e0e0e0;
+        }
+        .door-monitor-card .timer {
+            font-size: 3em;
+            font-weight: bold;
+            color: #ffc107; /* Orange for warning time */
+        }
+        .door-monitor-card .warning-text {
+            font-size: 0.9em;
+            color: #a0a0a0;
+        }
+
+        /* SVG icons (or you could use font awesome/etc.) */
+        .icon {
+            width: 24px;
+            height: 24px;
+            fill: #e0e0e0;
+            margin-right: 5px;
+        }
+        .icon-temp { fill: #007bff; }
+        .icon-humidity { fill: #17a2b8; }
+        .icon-alarm { fill: #dc3545; }
+
+
+        /* Connections - simplified for static representation */
+        .connection-line {
+            position: absolute;
+            background-color: #007bff; /* Blue line color */
+            height: 2px;
+            width: 0; /* Will be set by JS or more complex CSS */
+            z-index: -1;
+        }
+
+        /* Placeholder for actual component images */
+        .component-icon {
+            background-color: #4a69bd; /* Example blue block */
+            width: 50px;
+            height: 50px;
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8em;
+            color: white;
+            position: relative;
+        }
+        .component-icon.fan { background-color: #4CAF50; } /* Green for fan */
+        .component-icon.comp { background-color: #f44336; } /* Red for compressor */
+        .component-icon.pump { background-color: #2196F3; } /* Blue for pump */
+        .component-icon.tank { background-color: #607D8B; height: 70px; } /* Grey for tank */
+        .component-icon.container { background-color: #3f51b5; width: 100px; height: 70px; } /* Darker blue for container */
+
+        /* Positioning for illustrative purposes, this would be dynamic with JS */
+        .fan-status-overlay {
+            position: absolute;
+            top: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #333;
+            color: white;
+            padding: 2px 5px;
+            border-radius: 3px;
+            font-size: 0.7em;
+            white-space: nowrap;
+        }
+        .fan-status-overlay.running { background-color: #28a745; }
+        .fan-status-overlay.tripped { background-color: #dc3545; }
+
+        .comp-status-overlay {
+            position: absolute;
+            top: 50%;
+            right: -60px; /* Adjust positioning as needed */
+            transform: translateY(-50%);
+            background-color: #333;
+            color: white;
+            padding: 2px 5px;
+            border-radius: 3px;
+            font-size: 0.7em;
+            white-space: nowrap;
+        }
+        .comp-status-overlay.offline { background-color: #6c757d; }
+
+        /* General status text for components */
+        .component-status-text {
+            font-size: 0.9em;
+            color: #a0a0a0;
+            margin-top: 5px;
+        }
+.dashboard {
+    position: relative;  /* Add this */
+    display: block;      /* Override flex layout */
+    margin-bottom: 40px;
+    margin-top: 120px;
+}
+
+  /* Container center */
+  .container-wrapper {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .container img {
+    width: 420px; /* larger container */
+  }
+
+  /* Fans on top */
+  .fans {
+    position: absolute;
+    top: -70px;
+    display: flex;
+    gap: 20px;
+    z-index: 2;
+  }
+
+  .fans img {
+    width: 60px;
+    height: 60px;
+  }
+
+  .left-panel {
+    position: absolute;
+    bottom: 20px;
+    left: -450px;
+    display: flex;
+    flex-direction: row;
+    gap: 20px;
+    z-index: 2;
+    margin: 0;
+}
+/* Horizontal line from Water Tank */
+.connector-horizontal {
+    position: absolute;
+    width: 100px;  /* length of horizontal part */
+    height: 2px;
+    background-color: #007bff;
+    top: 30px;    /* adjust to align with Water Tank center */
+    left: 150px;   /* Water Tank's right edge (adjust as needed) */
+}
+
+/* Vertical line to Pump */
+.connector-vertical {
+    position: absolute;
+    width: 2px;
+    height: 40px; /* length of vertical part */
+    background-color: #007bff;
+    top: 30px;    /* where horizontal ends */
+    left: 150px;  /* horizontal line's end */
+}
+.connector-horizontal-2 {
+    position: absolute;
+    width: 90px;  /* length of horizontal part */
+    height: 2px;
+    background-color: #007bff;
+    top: 70px;    /* adjust to align with Water Tank center */
+    left: 60px;   /* Water Tank's right edge (adjust as needed) */
+}
+
+/* Horizontal line from Water Tank */
+.container-horizontal-pump {
+    position: absolute;
+    width: 220px;  /* length of horizontal part */
+    height: 2px;
+    background-color: #007bff;
+    top: 200px;    /* adjust to align with Water Tank center */
+    left: -190px;   /* Water Tank's right edge (adjust as needed) */
+}
+
+/* Vertical line to Pump */
+.container-vertical-pump {
+    position: absolute;
+    width: 2px;
+    height: 110px; /* length of vertical part */
+    background-color: #007bff;
+    top: 200px;    /* where horizontal ends */
+    left: -190px;  /* horizontal line's end */
+}
+  .left-panel .pump img {
+    width: 60px;
+    height: auto;
+  }
+
+  .left-panel .water-tank canvas {
+    width: 60px;
+    height: 90px;
+  }
+.left-panel .water-tank {
+  margin-left: 0px; /* remove extra horizontal space */
+  margin-right: 100px;
+}
+  .component {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+    color: blue;
+    position: relative;
+  }
+
+  /* Compressors right */
+  .compressors-right {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+    position: absolute;
+    top: 0;
+    right: -180px;
+  }
+
+  .compressor img {
+    width: 70px;
+  }
+
+
+  @keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+
+  .fan-rotating {
+    animation: spin 1s linear infinite;
+  }
+
+  .component img:hover { transform: scale(1.1); }
+
+.signal-lights-panel {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  margin-bottom: 20px;
+  justify-content: center;
+  align-items: center;
+}
+.signal-light {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.9em;
+  color: #e0e0e0;
+}
+.signal-light .status-light {
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  background-color: #6c757d; /* default gray/off */
+  border: 1px solid #333;
+}
+.status-light.running { background-color: #28a745; } /* green */
+.status-light.red { background-color: #dc3545; } /* red alert */
+
+    </style>
+</head>
+<body>
+
+    <div class="dashboard-header">COLD STORAGE SYSTEM OVERVIEW</div>
+        <!-- Signal Lights Panel -->
+<div class="signal-lights-panel">
+  <div class="signal-light">
+    <div class="status-light running" id="signal-running"></div>
+    <span>Running</span>
+  </div>
+  <div class="signal-light">
+    <div class="status-light" id="signal-comp-overload"></div>
+    <span>Compressor Overload</span>
+  </div>
+  <div class="signal-light">
+    <div class="status-light" id="signal-pump-overload"></div>
+    <span>Pump Overload</span>
+  </div>
+  <div class="signal-light">
+    <div class="status-light" id="signal-lp-trip"></div>
+    <span>LP Trip</span>
+  </div>
+  <div class="signal-light">
+    <div class="status-light" id="signal-hp-trip"></div>
+    <span>HP Trip</span>
+  </div>
+  <div class="signal-light">
+    <div class="status-light" id="signal-defrost"></div>
+    <span>Defrost</span>
+  </div>
+  <div class="signal-light">
+    <div class="status-light" id="signal-heating"></div>
+    <span>Heating</span>
+  </div>
+  <div class="signal-light">
+    <div class="status-light" id="signal-door-open"></div>
+    <span>Door Open</span>
+  </div>
+  <div class="signal-light">
+    <div class="status-light" id="signal-under-maintenance"></div>
+    <span>Under Maintenance</span>
+  </div>
+</div>
+
+    <div class="dashboard-grid">
+
+        <div class="card system-overview-card">
+            <div class="dashboard">
+
+  <div class="left-panel">
+  <div class="connector-horizontal"></div>
+<div class="connector-vertical"></div>
+
+  <div class="connector-horizontal-2"></div>
+
+  <div class="component water-tank">
+    <canvas id="tank-canvas" width="60" height="90"></canvas>
+    <div>Water Tank</div>
+  </div>
+
+  <div class="component pump">
+    <img id="pump-img" src="pump_icon.png" alt="Pump">
+    <div>Pump</div>
+  </div>
+</div>
+
+
+  <!-- Container center -->
+  <div class="container-wrapper">
+   <div class="container-horizontal-pump"></div>
+<div class="container-vertical-pump"></div>
+
+    <div class="container">
+      <img id="container-img" src="container.png" alt="Container">
+      <div class="fans">
+        <img id="fan1-img" src="fan.png" alt="Fan 1">
+        <img id="fan2-img" src="fan.png" alt="Fan 2">
+        <img id="fan3-img" src="fan.png" alt="Fan 1">
+        <img id="fan4-img" src="fan.png" alt="Fan 2">
+      </div>
+
+      <!-- Compressors right -->
+      <div class="compressors-right">
+        <div class="compressor">
+          <img id="comp1-img" src="compressor_new.png" alt="Compressor 1">
+          <div>Compressor 1</div>
+        </div>
+        <div class="compressor">
+          <img id="comp2-img" src="compressor_new.png" alt="Compressor 2">
+          <div>Compressor 2</div>
+        </div>
+        <div class="compressor">
+          <img id="comp3-img" src="compressor_new.png" alt="Compressor 3">
+          <div>Compressor 3</div>
+        </div>
+        <div class="compressor">
+          <img id="comp4-img" src="compressor_new.png" alt="Compressor 4">
+          <div>Compressor 4</div>
+        </div>
+      </div>
+
+    </div>
+    <div>Container</div>
+  </div>
+
+</div>
+
+
+
+            </div>
+
+        <div class="card temperature-card">
+            <div class="card-title">CURRENT TEMP:</div>
+            <div class="current-value" style="color: #dc3545;">2.1 °C</div> <div class="status-text">STATUS: HIGH TEMP WARNING</div>
+            <div class="set-temp-control">
+                <input type="number" value="4.0" step="0.1" id="setTempInput">
+                <button onclick="setTemperature()">APPLY</button>
+                <button class="remote-btn" style="background-color: #6c757d;">REMOTE</button>
+            </div>
+        </div>
+
+        <div class="card humidity-card">
+            <div class="card-title">HUMIDITY:</div>
+            <div class="current-value" style="color: #ffc107;">78 %RH</div> <div class="status-text">STATUS: HIGH HUMIDITY WARNING</div>
+        </div>
+
+        <div class="card alarm-card">
+            <div class="card-title">ACTIVE ALARMS</div>
+            <div class="alarm-item">
+                <span style="font-weight: bold;">CRITICAL:</span> Temp exceeded 2.5°C threshold. Check cooling system.
+            </div>
+            <div class="alarm-item">
+                <span style="font-weight: bold;">WARNING:</span> Defrost Heater failed to turn off.
+            </div>
+            <button>ACKNOWLEDGE ALL</button>
+        </div>
+
+        <div class="card door-monitor-card">
+            <div class="card-title">DOOR MONITOR</div>
+            <div class="timer">00:09:30</div>
+            <div class="warning-text">WARNING: Door open too long (limit 5 min)</div>
+        </div>
+
+    </div>
+
+    <script>
+        // Placeholder for dynamic JS functionality
+        function setTemperature() {
+            const temp = document.getElementById('setTempInput').value;
+            alert('Setting temperature to: ' + temp + '°C (This would send an API request)');
+            // In a real app, you'd send this via AJAX to your backend
+        }
+
+        // You would add more JS here to:
+        // - Update current temp/humidity periodically
+        // - Change component statuses and colors dynamically
+        // - Handle alarm acknowledgments
+        // - Update the door timer
+        // - Fetch real-time data from a backend API
+    </script>
+
+
+<script>
+  const comp1Img = document.getElementById('comp1-img');
+  const comp2Img = document.getElementById('comp2-img');
+  const comp3Img = document.getElementById('comp3-img');
+  const comp4Img = document.getElementById('comp4-img');
+  const fan1 = document.getElementById('fan1-img');
+  const fan2 = document.getElementById('fan2-img');
+  const fan3 = document.getElementById('fan3-img');
+  const fan4 = document.getElementById('fan4-img');
+  const container = document.getElementById('container-img');
+  const pump = document.getElementById('pump-img');
+
+  let status = { compressor1: true, compressor2: true, compressor3: true, compressor4: true };
+
+  function updateDashboard() {
+    fan1.classList.toggle('fan-rotating', status.compressor1);
+    fan2.classList.toggle('fan-rotating', status.compressor2);
+    fan3.classList.toggle('fan-rotating', status.compressor3);
+    fan4.classList.toggle('fan-rotating', status.compressor4);
+
+    container.src = (status.compressor1 || status.compressor2 || status.compressor3 || status.compressor4) ? 'worldwide-shipping.png' : 'container.png';
+    container.style.filter = (status.compressor1 || status.compressor2 || status.compressor3 || status.compressor4)
+      ? 'invert(45%) sepia(70%) saturate(500%) hue-rotate(200deg) brightness(95%) contrast(90%)'
+      : 'invert(18%) sepia(97%) saturate(5970%) hue-rotate(358deg) brightness(95%) contrast(102%)';
+
+
+    const activeFilter = 'invert(52%) sepia(80%) saturate(450%) hue-rotate(75deg) brightness(95%) contrast(90%)';
+    const inactiveFilter = 'invert(18%) sepia(97%) saturate(5970%) hue-rotate(358deg) brightness(95%) contrast(102%)';
+    comp1Img.style.filter = status.compressor1 ? activeFilter : inactiveFilter;
+    comp2Img.style.filter = status.compressor2 ? activeFilter : inactiveFilter;
+    comp3Img.style.filter = status.compressor3 ? activeFilter : inactiveFilter;
+    comp4Img.style.filter = status.compressor4 ? activeFilter : inactiveFilter;
+    fan1.style.filter = status.compressor1 ? activeFilter : inactiveFilter;
+    fan2.style.filter = status.compressor2 ? activeFilter : inactiveFilter;
+    fan3.style.filter = status.compressor3 ? activeFilter : inactiveFilter;
+    fan4.style.filter = status.compressor4 ? activeFilter : inactiveFilter;
+    pump.style.filter = activeFilter;
+  }
+
+  setInterval(() => {
+    status.compressor1 = !status.compressor1;
+    status.compressor2 = !status.compressor2;
+    status.compressor3 = !status.compressor3;
+    status.compressor4 = !status.compressor4;
+    updateDashboard();
+  }, 2000);
+
+  updateDashboard();
+</script>
+
+<script>
+const canvas = document.getElementById('tank-canvas');
+const ctx = canvas.getContext('2d');
+const tankImg = new Image();
+tankImg.src = 'water-tank.png';
+let fillStage = 0;
+
+tankImg.onload = () => {
+  drawTank();
+  setInterval(() => {
+    fillStage = (fillStage + 1) % 4;
+    drawTank();
+  }, 5000);
+};
+
+function drawTank() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  ctx.drawImage(tankImg, 0, 0, canvas.width, canvas.height);
+  const fillHeights = [0, 0.33, 0.66, 1];
+  const fillHeight = canvas.height * fillHeights[fillStage];
+  ctx.fillStyle = '#007BFF';
+  ctx.globalCompositeOperation = 'source-atop';
+  ctx.fillRect(0, canvas.height - fillHeight, canvas.width, fillHeight);
+  ctx.globalCompositeOperation = 'source-over';
+}
+</script>
+<script>
+window.onload = function() {
+  let signals = {
+    running: true,
+    compOverload: false,
+    pumpOverload: false,
+    lpTrip: false,
+    hpTrip: false,
+    defrost: false,
+    heating: false,
+    doorOpen: false,
+    underMaintenance: false
+  };
+
+  function updateSignalsTest() {
+    document.getElementById('signal-running').className = 'status-light ' + (signals.running ? 'running' : '');
+    document.getElementById('signal-comp-overload').className = 'status-light ' + (signals.compOverload ? 'red' : '');
+    document.getElementById('signal-pump-overload').className = 'status-light ' + (signals.pumpOverload ? 'red' : '');
+    document.getElementById('signal-lp-trip').className = 'status-light ' + (signals.lpTrip ? 'red' : '');
+    document.getElementById('signal-hp-trip').className = 'status-light ' + (signals.hpTrip ? 'red' : '');
+    document.getElementById('signal-defrost').className = 'status-light ' + (signals.defrost ? 'red' : '');
+    document.getElementById('signal-heating').className = 'status-light ' + (signals.heating ? 'red' : '');
+    document.getElementById('signal-door-open').className = 'status-light ' + (signals.doorOpen ? 'red' : '');
+    document.getElementById('signal-under-maintenance').className = 'status-light ' + (signals.underMaintenance ? 'red' : '');
+  }
+ function updateSignals() {
+    document.getElementById('signal-running').className = 'status-light running';
+    document.getElementById('signal-comp-overload').className = 'status-light red';
+    document.getElementById('signal-pump-overload').className = 'status-light red';
+    document.getElementById('signal-lp-trip').className = 'status-light red';
+    document.getElementById('signal-hp-trip').className = 'status-light red';
+    document.getElementById('signal-defrost').className = 'status-light running';
+    document.getElementById('signal-heating').className = 'status-light running';
+    document.getElementById('signal-door-open').className = 'status-light running';
+    document.getElementById('signal-under-maintenance').className = 'status-light running';
+  }
+  setInterval(() => {
+    signals.running = true;
+    signals.compOverload = true;
+    signals.pumpOverload = true;
+    signals.lpTrip = true;
+    signals.hpTrip = true;
+    signals.defrost = false;
+    signals.heating = false;
+    signals.doorOpen = false;
+    signals.underMaintenance = false;
+
+    updateSignals();
+  }, 5000);
+
+  updateSignals();
+};
+</script>
+</body>
+</html>
