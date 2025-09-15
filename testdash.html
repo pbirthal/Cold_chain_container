@@ -62,7 +62,7 @@
     justify-content: space-around;
     padding: 30px;
     flex-wrap: wrap;
-    background-color: gray;
+    background: url('bgcoldchain.jpeg');
 }
 
         .system-overview-card .component {
@@ -284,7 +284,7 @@
   }
 
   .container img {
-    width: 420px; /* larger container */
+    width: 600px; /* larger container */
   }
 
   /* Fans on top */
@@ -294,6 +294,7 @@
     display: flex;
     gap: 20px;
     z-index: 2;
+    margin-left: 100px;
   }
 
   .fans img {
@@ -304,7 +305,7 @@
   .left-panel {
     position: absolute;
     bottom: 20px;
-    left: -450px;
+    left: -400px;
     display: flex;
     flex-direction: row;
     gap: 20px;
@@ -346,17 +347,17 @@
     height: 2px;
     background-color: #007bff;
     top: 200px;    /* adjust to align with Water Tank center */
-    left: -190px;   /* Water Tank's right edge (adjust as needed) */
+    left: -170px;   /* Water Tank's right edge (adjust as needed) */
 }
 
 /* Vertical line to Pump */
 .container-vertical-pump {
     position: absolute;
     width: 2px;
-    height: 110px; /* length of vertical part */
+    height: 280px; /* length of vertical part */
     background-color: #007bff;
     top: 200px;    /* where horizontal ends */
-    left: -190px;  /* horizontal line's end */
+    left: -170px;  /* horizontal line's end */
 }
   .left-panel .pump img {
     width: 60px;
@@ -388,6 +389,7 @@
     position: absolute;
     top: 0;
     right: -180px;
+    margin-top: 100px;
   }
 
   .compressor img {
@@ -489,12 +491,12 @@
 
   <div class="component water-tank">
     <canvas id="tank-canvas" width="60" height="90"></canvas>
-    <div>Water Tank</div>
+    <div style="color:#ffffff">Water Tank</div>
   </div>
 
   <div class="component pump">
     <img id="pump-img" src="pump_icon.png" alt="Pump">
-    <div>Pump</div>
+    <div style="color:#ffffff">Pump</div>
   </div>
 </div>
 
@@ -523,18 +525,10 @@
           <img id="comp2-img" src="compressor_new.png" alt="Compressor 2">
           <div>Compressor 2</div>
         </div>
-        <div class="compressor">
-          <img id="comp3-img" src="compressor_new.png" alt="Compressor 3">
-          <div>Compressor 3</div>
-        </div>
-        <div class="compressor">
-          <img id="comp4-img" src="compressor_new.png" alt="Compressor 4">
-          <div>Compressor 4</div>
-        </div>
       </div>
 
     </div>
-    <div>Container</div>
+    <div style="color:#ffffff;margin-top:-30px;">Container</div>
   </div>
 
 </div>
@@ -597,8 +591,6 @@
 <script>
   const comp1Img = document.getElementById('comp1-img');
   const comp2Img = document.getElementById('comp2-img');
-  const comp3Img = document.getElementById('comp3-img');
-  const comp4Img = document.getElementById('comp4-img');
   const fan1 = document.getElementById('fan1-img');
   const fan2 = document.getElementById('fan2-img');
   const fan3 = document.getElementById('fan3-img');
@@ -606,16 +598,16 @@
   const container = document.getElementById('container-img');
   const pump = document.getElementById('pump-img');
 
-  let status = { compressor1: true, compressor2: true, compressor3: true, compressor4: true };
+  let status = { compressor1: true, compressor2: true };
 
   function updateDashboard() {
     fan1.classList.toggle('fan-rotating', status.compressor1);
     fan2.classList.toggle('fan-rotating', status.compressor2);
-    fan3.classList.toggle('fan-rotating', status.compressor3);
-    fan4.classList.toggle('fan-rotating', status.compressor4);
+    fan3.classList.toggle('fan-rotating', status.compressor1);
+    fan4.classList.toggle('fan-rotating', status.compressor2);
 
-    container.src = (status.compressor1 || status.compressor2 || status.compressor3 || status.compressor4) ? 'worldwide-shipping.png' : 'container.png';
-    container.style.filter = (status.compressor1 || status.compressor2 || status.compressor3 || status.compressor4)
+    container.src = (status.compressor1 || status.compressor2 ) ? 'worldwide-shipping.png' : 'container.png';
+    container.style.filter = (status.compressor1 || status.compressor2 )
       ? 'invert(45%) sepia(70%) saturate(500%) hue-rotate(200deg) brightness(95%) contrast(90%)'
       : 'invert(18%) sepia(97%) saturate(5970%) hue-rotate(358deg) brightness(95%) contrast(102%)';
 
@@ -624,22 +616,18 @@
     const inactiveFilter = 'invert(18%) sepia(97%) saturate(5970%) hue-rotate(358deg) brightness(95%) contrast(102%)';
     comp1Img.style.filter = status.compressor1 ? activeFilter : inactiveFilter;
     comp2Img.style.filter = status.compressor2 ? activeFilter : inactiveFilter;
-    comp3Img.style.filter = status.compressor3 ? activeFilter : inactiveFilter;
-    comp4Img.style.filter = status.compressor4 ? activeFilter : inactiveFilter;
     fan1.style.filter = status.compressor1 ? activeFilter : inactiveFilter;
     fan2.style.filter = status.compressor2 ? activeFilter : inactiveFilter;
-    fan3.style.filter = status.compressor3 ? activeFilter : inactiveFilter;
-    fan4.style.filter = status.compressor4 ? activeFilter : inactiveFilter;
+    fan3.style.filter = status.compressor1 ? activeFilter : inactiveFilter;
+    fan4.style.filter = status.compressor2 ? activeFilter : inactiveFilter;
     pump.style.filter = activeFilter;
   }
 
   setInterval(() => {
     status.compressor1 = !status.compressor1;
     status.compressor2 = !status.compressor2;
-    status.compressor3 = !status.compressor3;
-    status.compressor4 = !status.compressor4;
     updateDashboard();
-  }, 2000);
+  }, 5000);
 
   updateDashboard();
 </script>
