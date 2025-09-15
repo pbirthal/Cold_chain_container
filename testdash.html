@@ -62,7 +62,7 @@
     justify-content: space-around;
     padding: 30px;
     flex-wrap: wrap;
-    background: url('bgcoldchain.jpeg');
+    background: url('greenboxbg.jpg');
 }
 
         .system-overview-card .component {
@@ -315,8 +315,8 @@
 /* Horizontal line from Water Tank */
 .connector-horizontal {
     position: absolute;
-    width: 100px;  /* length of horizontal part */
-    height: 2px;
+    width: 130px;  /* length of horizontal part */
+    height: 5px;
     background-color: #007bff;
     top: 30px;    /* adjust to align with Water Tank center */
     left: 150px;   /* Water Tank's right edge (adjust as needed) */
@@ -325,7 +325,7 @@
 /* Vertical line to Pump */
 .connector-vertical {
     position: absolute;
-    width: 2px;
+    width: 5px;
     height: 40px; /* length of vertical part */
     background-color: #007bff;
     top: 30px;    /* where horizontal ends */
@@ -334,7 +334,7 @@
 .connector-horizontal-2 {
     position: absolute;
     width: 90px;  /* length of horizontal part */
-    height: 2px;
+    height: 5px;
     background-color: #007bff;
     top: 70px;    /* adjust to align with Water Tank center */
     left: 60px;   /* Water Tank's right edge (adjust as needed) */
@@ -344,29 +344,29 @@
 .container-horizontal-pump {
     position: absolute;
     width: 220px;  /* length of horizontal part */
-    height: 2px;
+    height: 5px;
     background-color: #007bff;
     top: 200px;    /* adjust to align with Water Tank center */
-    left: -170px;   /* Water Tank's right edge (adjust as needed) */
+    left: -140px;   /* Water Tank's right edge (adjust as needed) */
 }
 
 /* Vertical line to Pump */
 .container-vertical-pump {
     position: absolute;
-    width: 2px;
+    width: 5px;
     height: 280px; /* length of vertical part */
     background-color: #007bff;
     top: 200px;    /* where horizontal ends */
-    left: -170px;  /* horizontal line's end */
+    left: -140px;  /* horizontal line's end */
 }
   .left-panel .pump img {
-    width: 60px;
+    width: 120px;
     height: auto;
   }
 
   .left-panel .water-tank canvas {
-    width: 60px;
-    height: 90px;
+    width: 120px;
+    height: 120px;
   }
 .left-panel .water-tank {
   margin-left: 0px; /* remove extra horizontal space */
@@ -490,7 +490,7 @@
   <div class="connector-horizontal-2"></div>
 
   <div class="component water-tank">
-    <canvas id="tank-canvas" width="60" height="90"></canvas>
+    <canvas id="tank-canvas"></canvas>
     <div style="color:#ffffff">Water Tank</div>
   </div>
 
